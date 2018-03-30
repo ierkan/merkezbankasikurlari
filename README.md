@@ -1,4 +1,4 @@
-
+MERHABA
 # TCMB (Central Bank of Turkey) exchange rates can be queried on
 #					http://www.tcmb.gov.tr/kurlar/kurlar_tr.html
 
