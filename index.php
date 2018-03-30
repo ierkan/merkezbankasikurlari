@@ -11,7 +11,7 @@
   </head>
   <body>
     <h2>
-      <?php echo "Dolar kuru: " . $a ?>
+      <?php echo "Dolar kuru: " . $a ?>      
     </h2>
   </body>
 </html>
