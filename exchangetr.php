@@ -1,106 +1,83 @@
 <?php
 
-	function getExchangeRate($currencyType, $dateWithTime) {
-		if (empty($dateWithTime)) {
-			$dateWithTime = new DateTime();
-		}
-
-		list($xmlURL, $previousDate) = getXmlURL($dateWithTime);
-
-		if (isset($xmlURL)) {
-			$URL_headers = get_headers($xmlURL);
-			$notFound = "HTTP/1.0 404 Not Found";
-			$found = "HTTP/1.1 200 OK";
-
-		  if (empty($URL_headers) || $URL_headers[0] == $notFound) {
-				return getExchangeRate($currencyType, $previousDate);
-		  } elseif (is_array($URL_headers) && $URL_headers[0] == $found) {
-				$exchangeRates = simplexml_load_file($xmlURL);
-				$result = $exchangeRates->Currency[$currencyType]->BanknoteSelling;
-				return $result;
+	function getExchangeRate($currencyType, $dateStringWithTime=null) {
+		$format = 'd-m-Y - H:i';
+		if (empty($dateStringWithTime)) {
+			$targetDate = new DateTime();
+		} else {
+			if (dateIsValid($dateStringWithTime)) {
+				$targetDate = DateTime::createFromFormat($format, $dateStringWithTime);
+			} else {
+				return 'Invalid date! The date should be in ' . $format . ' format! Ex: 19-03-2018 - 13:30';
 			}
-		}	else {
-			return 0;
-		}
-	} // end of getExchangeRate function
-
-	/*
-	 * @param
-	 * @return Returns 0 for future date&time requests and erroneous requests
-	 */
-	function getXmlURL($dateWithTime) {
-		// Detect the current date&time in REVERSE ORDER
-		$todayDate = date('Y.m.d');
-		$todayDate = preg_replace('/[^0-9]/', '', $todayDate);
-		$todayDateInt = (int)$todayDate;
-
-		$todayTime = date('h:i:s');
-		$todayTime = preg_replace('/[^0-9]/', '', $todayTime);
-		$todayTimeInt = (int)$todayTime;
-
-		# Detect yesterday date&time in PROPER ORDER
-		$yesterdayDate = date('d.m.Y',strtotime("-1 days"));
-		$yesterdayDate = preg_replace('/[^0-9]/', '', $yesterdayDate);
-
-		# Detect the requested date&time
-		$requestedDate = strtotime($dateWithTime);
-		if ($requestedDate) {
-			$requestedDate = date('d.m.Y h:i:s', $requestedDate);
-			$dateWithTime = preg_replace('/[^0-9]/', '', $requestedDate);
-		} else {
-			$dateWithTime = preg_replace('/[^0-9]/', '', $dateWithTime);
 		}
 
-		$stringLength = strlen($dateWithTime);
-		if ($stringLength == 14) {
+		$xmlURL = constructUrlFrom($targetDate);
+		//die($xmlURL);
 
-			# ... substr(string, startIndex, length);
-			$dayNum = substr($dateWithTime, 0, 2);
-			$monthNum = substr($dateWithTime, 2, 2);
-			$yearNum = substr($dateWithTime, 4, 4);
+		if (!pageExists($xmlURL)) {
+			$xmlURL = findLastValidDateBefore($targetDate);
+		}
 
-			$folder = $yearNum.$monthNum;
-			$requestedDate = $folder.$dayNum;
-			$requestedDateInt = (int)$requestedDate;
+		if (is_null($xmlURL)) {
+			return 'An error occured! Cannot find a valid day!';
+		}
 
-			$requestedTime = substr($dateWithTime, 8, 6);
-			$requestedTimeInt = (int)$requestedTime;
+		$exchangeRates = simplexml_load_file($xmlURL);
+		$result = $exchangeRates->Currency[$currencyType]->BanknoteSelling;
+		return $result;
 
+	}
 
-			if ($todayDateInt < $requestedDateInt) { # //////////////////////////////
+	// Bakalım formata uygun bir tarih stringi gönderilmiş mi
+	function dateIsValid($date, $format = 'd-m-Y - H:i')	{
+			try {
+				$d = DateTime::createFromFormat($format, $date);
+				return $d && $d->format($format) == $date;
+			} catch (Exception $e) {
+				var_dump (DateTime::getLastErrors());
+			}
+	}
 
-				# Return false for future date&time requests
-				return array(false, false);
-
-			} # /////////////////////////////////////////////////////////////////////
-
-			if ($todayDate == $requestedDate) { # ///////////////////////////////////
-
-				# TCMB publishes daily exchange rates after 15.30 pm
-				# All requests before 15.30 are subject to previous day's exchange rate
-
-				if ($requestedTimeInt < 153000) {
-					$xmlURL = "http://www.tcmb.gov.tr/kurlar/".$folder."/".$yesterdayDate.".xml";
-				} elseif ($requestedTimeInt >= 153000) {
-					if ($todayTimeInt < 153000) {
-						# Return false for future date&time requests
-						return array(false, false);
-					} elseif ($todayTimeInt >= 153000) {
-						$xmlURL = "http://www.tcmb.gov.tr/kurlar/today.xml";
-					}
-				}
-			} # /////////////////////////////////////////////////////////////////////
-
-			if ($todayDateInt > $requestedDateInt) { # //////////////////////////////
-				$xmlURL = "http://www.tcmb.gov.tr/kurlar/".$folder."/".$dayNum.$monthNum.$yearNum.".xml";
-			} # /////////////////////////////////////////////////////////////////////
-
-			$previousDate = date('d.m.Y', strtotime("-1 day", strtotime($dayNum.".".$monthNum.".".$yearNum)))." - 19:30:00";
-			return array($xmlURL, $previousDate);
-
+	//Şöyle bir url string oluştur: http://www.tcmb.gov.tr/kurlar/201803/26032018.xml
+	function constructUrlFrom($targetDate) {
+		if (empty($targetDate)) {
+			echo "Invalid date! Cannot construct url from nothing!";
+			return NULL;
 		} else {
-				return array(false, false);
+			$xmlurl = 'http://www.tcmb.gov.tr/kurlar/';
+			$xmlurl = $xmlurl . $targetDate->format('Ym/dmY') . '.xml';
+			return $xmlurl;
 		}
 	}
+
+	// bakalım böyle bir sayfa var mı
+	function pageExists($url) {
+		if (empty($url)) {
+			echo('Cannot check a blank url');
+			return FALSE;
+		}
+		$URL_headers = get_headers($url);
+		if (is_array($URL_headers) && $URL_headers[0] == 'HTTP/1.1 200 OK') {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	// bu tarihten önceki en yakın geçerli günü bul (en fazla 15 gün geriye kadar git)
+	function findLastValidDateBefore($targetDate) {
+		$maxDays = 15;
+
+		for ($i=1; $i <= $maxDays; $i++) {
+			$theDate = $targetDate->modify('-' . $i . ' day');
+			$url = constructUrlFrom ($theDate);
+			if (pageExists($url)) {
+				return $url;
+			}
+		}
+		return NULL;
+	}
+
 
 ?>
