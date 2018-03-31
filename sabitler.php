@@ -1,6 +1,6 @@
 <?php
-  class sabitler {
-    const kurlar = array(
+  class Sabitler {
+    var $kurlar = array(
       "0"=>"USD (ABD DOLARI)",
       "1"=>"AUD (AVUSTRALYA DOLARI)",
       "2"=>"DKK (DANİMARKA KRONU)",

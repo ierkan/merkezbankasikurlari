@@ -1,7 +1,9 @@
 <?php
 
+	require_once('Sabitler.php');
 	require_once('sonuc.php');
-	require_once('sabitler.php');
+
+	$Sabitler = new Sabitler();
 
 	function getExchangeRate($currencyType, $dateStringWithTime=null) {
 		$sonuc = new sonuc();
@@ -18,7 +20,7 @@
 			}
 		}
 
-		if (empty($currencyType)) {
+		if (!isset($currencyType)) {
 			$sonuc->hata('Geçersiz kur!');
 			return $sonuc;
 		} else {
