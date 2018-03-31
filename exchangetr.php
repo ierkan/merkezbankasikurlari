@@ -18,7 +18,6 @@
 		}
 
 		$xmlURL = constructUrlFrom($targetDate);
-		//die($xmlURL);
 
 		if (!pageExists($xmlURL)) {
 			$xmlURL = findLastValidDateBefore($targetDate);

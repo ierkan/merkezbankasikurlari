@@ -1,7 +1,14 @@
 <?php
   require_once ('exchangetr.php');
-  //$a = getExchangeRate(0);//0:dolar -> bugün
-  $a = getExchangeRate(0,"29-03-2018 - 15:35");//0:dolar
+
+  $timezone = new DateTimeZone('Europe/Istanbul');
+  if(isset($_POST['targetdate'])) {
+    $targetDate = DateTime::createFromFormat("Y-m-d\TH:i:s",$_POST['targetdate']);
+  } else {
+    $targetDate = new DateTime('now', $timezone);
+  }
+  //echo $targetDate->format('d-m-Y - H:i');
+  $a = getExchangeRate(0, $targetDate->format('d-m-Y - H:i'));//0:dolar
 
   $mesaj = "";
   if ($a->durum ==='başarılı') {
@@ -20,8 +27,16 @@
     <title>Merkez Bankası Kurları</title>
   </head>
   <body>
+    <form class="" action="index.php" method="post">
+      <input id="targetdate" name="targetdate" type="datetime-local"
+             autofocus="autofocus"
+             value="<?php echo $targetDate->format('Y-m-d\TH:i:s'); ?>"
+             required = "required">
+      <input type="submit" value="Getir">
+    </form>
     <h2>
-      <?php echo "Dolar kuru: " . $mesaj ?>
+      <?php echo $targetDate->format('d-m-Y - H:i') . " tarihi dolar kuru: " . $mesaj ?>
     </h2>
   </body>
 </html>
+<script type="text/javascript" src="//code.jquery.com/jquery-3.3.1.min.js"/>
