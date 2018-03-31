@@ -54,12 +54,16 @@
 	}
 
 	// Kullanıcının istediği tarih bugün mü
-	function dateIsToday($dateStringWithTime) {
+	function dateIsToday($targetDate) {
 		try {
-			$format = 'd-m-Y';
-			$d = DateTime::createFromFormat($format, $dateStringWithTime);
-			$dateNow = strtotime(date($format));
-			return $d == $dateNow;
+			if ($targetDate == null) {
+				return true;
+			} else {
+				$format = 'd-m-Y';
+				$d = DateTime::createFromFormat($format, $targetDate->format($format));
+				$dateNow = date($format);
+				return $d == $dateNow;
+			}
 		} catch (Exception $e) {
 			var_dump (DateTime::getLastErrors());
 		}
@@ -80,7 +84,7 @@
 		if (empty($targetDate)) {
 			echo "Invalid date! Cannot construct url from nothing!";
 			return NULL;
-		} elseif (dateIsToday($dateStringWithTime)) {
+		} elseif (dateIsToday($targetDate)) {
 			$xmlurl = 'http://www.tcmb.gov.tr/kurlar/today.xml';
 			return $xmlurl;
 		} else {
