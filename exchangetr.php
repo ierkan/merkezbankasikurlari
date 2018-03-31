@@ -1,6 +1,7 @@
 <?php
 
 	require_once('sonuc.php');
+	require_once('sabitler.php');
 
 	function getExchangeRate($currencyType, $dateStringWithTime=null) {
 		$sonuc = new sonuc();
@@ -14,6 +15,21 @@
 			} else {
 				$sonuc->hata('Geçersiz tarih! Tarih formatı \'' . $format . '\' şeklinde olmalıdır. Örn: 19-03-2018 - 13:30');
 				return $sonuc;
+			}
+		}
+
+		if (empty($currencyType)) {
+			$sonuc->hata('Geçersiz kur!');
+			return $sonuc;
+		} else {
+			if (!is_int($currencyType)) {
+				try {
+					$currencyType = intval($currencyType);
+				}
+				catch (Exception $e) {
+					$sonuc->hata('Geçersiz kur değişkeni!');
+					return $sonuc;
+				}
 			}
 		}
 
