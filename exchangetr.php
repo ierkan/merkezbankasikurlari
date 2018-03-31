@@ -1,6 +1,10 @@
 <?php
 
+	require_once('sonuc.php');
+
 	function getExchangeRate($currencyType, $dateStringWithTime=null) {
+		$sonuc = new sonuc();
+
 		$format = 'd-m-Y - H:i';
 		if (empty($dateStringWithTime)) {
 			$targetDate = new DateTime();
@@ -8,7 +12,8 @@
 			if (dateIsValid($dateStringWithTime)) {
 				$targetDate = DateTime::createFromFormat($format, $dateStringWithTime);
 			} else {
-				return 'Invalid date! The date should be in ' . $format . ' format! Ex: 19-03-2018 - 13:30';
+				$sonuc->hata('Geçersiz tarih! Tarih formatı \'' . $format . '\' şeklinde olmalıdır. Örn: 19-03-2018 - 13:30');
+				return $sonuc;
 			}
 		}
 
@@ -20,12 +25,14 @@
 		}
 
 		if (is_null($xmlURL)) {
-			return 'An error occured! Cannot find a valid day!';
+			$sonuc->hata('Bir hata oluştu. Geçerli bir geçmiş gün bulunamadı!');
+			return $sonuc;
 		}
 
 		$exchangeRates = simplexml_load_file($xmlURL);
 		$result = $exchangeRates->Currency[$currencyType]->BanknoteSelling;
-		return $result;
+		$sonuc->veri($result);
+		return $sonuc;
 
 	}
 
