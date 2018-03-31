@@ -62,7 +62,7 @@
 				$format = 'd-m-Y';
 				$d = DateTime::createFromFormat($format, $targetDate->format($format));
 				$dateNow = date($format);
-				return $d == $dateNow;
+				return $d >= $dateNow;
 			}
 		} catch (Exception $e) {
 			var_dump (DateTime::getLastErrors());
