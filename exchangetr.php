@@ -53,6 +53,18 @@
 
 	}
 
+	// Kullanıcının istediği tarih bugün mü
+	function dateIsToday($dateStringWithTime) {
+		try {
+			$format = 'd-m-Y';
+			$d = DateTime::createFromFormat($format, $dateStringWithTime);
+			$dateNow = strtotime(date($format));
+			return $d && $dateNow;
+		} catch (Exception $e) {
+			var_dump (DateTime::getLastErrors());
+		}
+	}
+
 	// Bakalım formata uygun bir tarih stringi gönderilmiş mi
 	function dateIsValid($date, $format = 'd-m-Y - H:i')	{
 			try {
@@ -68,6 +80,9 @@
 		if (empty($targetDate)) {
 			echo "Invalid date! Cannot construct url from nothing!";
 			return NULL;
+		} elseif (dateIsToday($dateStringWithTime)) {
+			$xmlurl = 'http://www.tcmb.gov.tr/kurlar/today.xml';
+			return $xmlurl;
 		} else {
 			$xmlurl = 'http://www.tcmb.gov.tr/kurlar/';
 			$xmlurl = $xmlurl . $targetDate->format('Ym/dmY') . '.xml';
