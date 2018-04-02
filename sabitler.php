@@ -5,7 +5,7 @@
       "1"=>"AUD (AVUSTRALYA DOLARI)",
       "2"=>"DKK (DANİMARKA KRONU)",
       "3"=>"EUR (EURO)",
-      "4"=>"GPB (İNGİLİZ STERLİNİ)",
+      "4"=>"GBP (İNGİLİZ STERLİNİ)",
       "5"=>"CHF (İSVİÇRE FRANGI)",
       "6"=>"SEK (İSVEÇ KRONU)",
       "7"=>"CAD (KANADA DOLARI)",
