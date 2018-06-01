@@ -6,6 +6,7 @@
 	$Sabitler = new Sabitler();
 
 	function getExchangeRate($currencyType, $dateStringWithTime=null) {
+		global $Sabitler;
 		$sonuc = new sonuc();
 
 		$format = 'd-m-Y - H:i';
@@ -15,13 +16,13 @@
 			if (dateIsValid($dateStringWithTime)) {
 				$targetDate = DateTime::createFromFormat($format, $dateStringWithTime);
 			} else {
-				$sonuc->hata('Geçersiz tarih! Tarih formatı \'' . $format . '\' şeklinde olmalıdır. Örn: 19-03-2018 - 13:30');
+				$sonuc->setHata('Geçersiz tarih! Tarih formatı \'' . $format . '\' şeklinde olmalıdır. Örn: 19-03-2018 - 13:30');
 				return $sonuc;
 			}
 		}
 
 		if (!isset($currencyType)) {
-			$sonuc->hata('Geçersiz kur!');
+			$sonuc->setHata('Geçersiz kur!');
 			return $sonuc;
 		} else {
 			if (!is_int($currencyType)) {
@@ -29,7 +30,7 @@
 					$currencyType = intval($currencyType);
 				}
 				catch (Exception $e) {
-					$sonuc->hata('Geçersiz kur değişkeni!');
+					$sonuc->setHata('Geçersiz kur değişkeni!');
 					return $sonuc;
 				}
 			}
@@ -42,13 +43,14 @@
 		}
 
 		if (is_null($xmlURL)) {
-			$sonuc->hata('Bir hata oluştu. Geçerli bir geçmiş gün bulunamadı!');
+			$sonuc->setHata('Bir hata oluştu. Geçerli bir geçmiş gün bulunamadı!');
 			return $sonuc;
 		}
 
+
 		$exchangeRates = simplexml_load_file($xmlURL);
-		$result = $exchangeRates->Currency[$currencyType]->BanknoteSelling;
-		$sonuc->veri($result);
+		$result = (string)$exchangeRates->Currency[$currencyType]->BanknoteSelling;
+		$sonuc->veri($result, $targetDate, $Sabitler->kurlar[$currencyType]);
 		return $sonuc;
 
 	}
@@ -61,7 +63,9 @@
 			} else {
 				$format = 'd-m-Y';
 				$d = DateTime::createFromFormat($format, $targetDate->format($format));
-				$dateNow = date($format);
+				//echo $targetDate->format('d-m-Y - H:i');
+				$dateNow = new DateTime();
+				//echo $dateNow->format('d-m-Y - H:i');
 				return $d >= $dateNow;
 			}
 		} catch (Exception $e) {
