@@ -1,6 +1,6 @@
 <?php
 
-	require_once('Sabitler.php');
+	require_once('sabitler.php');
 	require_once('sonuc.php');
 
 	$Sabitler = new Sabitler();
