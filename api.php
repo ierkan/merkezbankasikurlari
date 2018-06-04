@@ -6,7 +6,7 @@
     $targetDate = DateTime::createFromFormat("Y-m-d\TH:i:s",$_POST['targetdate']);
     if (!$targetDate) {
       $sonuc = new sonuc();
-      $sonuc->hata("Tarih geçersiz. Gönderilen tarih Y-m-d\TH:i:s formatında olmalıdır. Örneğin: 2017-05-29T00:00:00");
+      $sonuc->setHata("Tarih geçersiz. Gönderilen tarih Y-m-d\TH:i:s formatında olmalıdır. Örneğin: 2017-05-29T00:00:00");
       echo json_encode($sonuc);
       die();
     }
@@ -18,7 +18,7 @@
     $targetCurrency = $_POST['currency'];
     if (!is_int($targetCurrency)) {
       $sonuc = new sonuc();
-      $sonuc->hata("Gecersiz kur girildi.");
+      $sonuc->setHata("Gecersiz kur girildi.");
       echo json_encode($sonuc);
       die();
     }

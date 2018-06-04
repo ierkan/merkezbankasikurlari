@@ -48,16 +48,16 @@
 			return $this->kur;
 		}
 
-    function hata($aciklama) {
+    function setHata($aciklama) {
       $this->durum    = 'hata';
       $this->aciklama = $aciklama;
     }
-    function uyari($veri, $aciklama) {
+    function setUyari($veri, $aciklama) {
       $this->durum    = 'uyarı';
       $this->veri     = $veri;
       $this->aciklama = $aciklama;
     }
-    function veri($veri, $zaman, $kur="") {
+    function setVeri($veri, $zaman, $kur="") {
       $this->durum    = 'basarili';
       $this->veri     = $veri;
       $this->kur      = $kur;

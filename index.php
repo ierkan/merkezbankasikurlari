@@ -18,9 +18,9 @@
 
   $mesaj = "";
   if ($a->durum ==='başarılı') {
-    $mesaj = $a->veri;
+    $mesaj = $a->setVeri;
   } elseif ($a->durum ==='uyarı') {
-    $mesaj = $a->veri . ' (' . $a->aciklama . ')';
+    $mesaj = $a->setVeri . ' (' . $a->aciklama . ')';
   } else { //hata
     $mesaj = $a->durum . ' (' . $a->aciklama . ')';
   }
