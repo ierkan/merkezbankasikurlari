@@ -104,12 +104,25 @@
 			echo('Cannot check a blank url');
 			return FALSE;
 		}
-		$URL_headers = get_headers($url);
-		if (is_array($URL_headers) && $URL_headers[0] == 'HTTP/1.1 200 OK') {
+
+		// create curl resource
+		$ch = curl_init();
+
+		curl_setopt($ch, CURLOPT_URL, $url); // set url
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //return the transfer as a string
+		curl_setopt($ch, CURLOPT_HEADER, 1); //enable headers
+		curl_setopt($ch, CURLOPT_NOBODY, 1); //get only headers
+		$output = curl_exec($ch); // $output contains the output string
+		curl_close($ch);// close curl resource to free up system resources
+		//echo $output;
+		$konum = strpos($output,"\r\n");
+		$header = substr ($output,0,$konum);
+		if ($header == "HTTP/1.1 200 OK") {
 			return TRUE;
 		} else {
 			return FALSE;
 		}
+
 	}
 
 	// bu tarihten önceki en yakın geçerli günü bul (en fazla 15 gün geriye kadar git)

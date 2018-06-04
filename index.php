@@ -17,9 +17,9 @@
   $a = getExchangeRate($targetCurrency, $targetDate->format('d-m-Y - H:i'));//0:dolar
 
   $mesaj = "";
-  if ($a->durum ==='başarılı') {
+  if ($a->durum ==='basarili') {
     $mesaj = $a->veri;
-  } elseif ($a->durum ==='uyarı') {
+  } elseif ($a->durum ==='uyari') {
     $mesaj = $a->veri . ' (' . $a->aciklama . ')';
   } else { //hata
     $mesaj = $a->durum . ' (' . $a->aciklama . ')';

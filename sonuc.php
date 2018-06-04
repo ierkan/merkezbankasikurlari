@@ -53,7 +53,7 @@
       $this->aciklama = $aciklama;
     }
     function setUyari($veri, $aciklama) {
-      $this->durum    = 'uyarı';
+      $this->durum    = 'uyari';
       $this->veri     = $veri;
       $this->aciklama = $aciklama;
     }
