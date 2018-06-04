@@ -50,7 +50,7 @@
 
 		$exchangeRates = simplexml_load_file($xmlURL);
 		$result = (string)$exchangeRates->Currency[$currencyType]->BanknoteSelling;
-		$sonuc->setVeri($result, $targetDate, $Sabitler->kurlar[$currencyType]);
+		$sonuc->veri($result, $targetDate, $Sabitler->kurlar[$currencyType]);
 		return $sonuc;
 
 	}

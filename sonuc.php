@@ -57,7 +57,7 @@
       $this->veri     = $veri;
       $this->aciklama = $aciklama;
     }
-    function setVeri($veri, $zaman, $kur="") {
+    function veri($veri, $zaman, $kur="") {
       $this->durum    = 'basarili';
       $this->veri     = $veri;
       $this->kur      = $kur;
