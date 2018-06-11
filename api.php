@@ -16,7 +16,7 @@
 
   if(isset($_POST['currency'])) {
     $targetCurrency = $_POST['currency'];
-    if (!is_int($targetCurrency)) {
+    if (!is_numeric($targetCurrency)) {
       $sonuc = new sonuc();
       $sonuc->setHata("Gecersiz kur girildi.");
       echo json_encode($sonuc);
